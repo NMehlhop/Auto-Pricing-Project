@@ -1,0 +1,182 @@
+{
+  "status": "frozen_for_notebook_07",
+  "selection_basis": "Development OOF calibration, original-dollar errors, fold stability, tail sensitivity, and GPD parameter uncertainty; conventional Gamma retained after body/tail comparison",
+  "oof_sha256": {
+    "05_frequency_oof.csv": "76a9a803a4704cac6aac34279bcef20017a78be321ccadaf8af0bddf72903868",
+    "05_severity_oof.csv": "5a5e4d1e6996ccc2c1974c99f8def158073613ca0a2c4270dcbfbf8711a2d344"
+  },
+  "software_versions": {
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "sklearn": "1.9.1",
+    "statsmodels": "0.15.0"
+  },
+  "development_policy_extract": "data/processed/05_development_policies.csv",
+  "category_levels": {
+    "VehGas": [
+      "Diesel",
+      "Regular"
+    ],
+    "Region": [
+      "Alsace",
+      "Aquitaine",
+      "Auvergne",
+      "Basse-Normandie",
+      "Bourgogne",
+      "Bretagne",
+      "Centre",
+      "Champagne-Ardenne",
+      "Corse",
+      "Franche-Comte",
+      "Haute-Normandie",
+      "Ile-de-France",
+      "Languedoc-Roussillon",
+      "Limousin",
+      "Lorraine",
+      "Midi-Pyrenees",
+      "Nord-Pas-de-Calais",
+      "Pays-de-la-Loire",
+      "Picardie",
+      "Poitou-Charentes",
+      "Provence-Alpes-Cotes-D'Azur",
+      "Rhone-Alpes"
+    ]
+  },
+  "frequency": {
+    "candidate": "Boosted Poisson",
+    "class": "sklearn.ensemble.HistGradientBoostingRegressor",
+    "parameters": {
+      "categorical_features": "from_dtype",
+      "early_stopping": false,
+      "interaction_cst": null,
+      "l2_regularization": 10,
+      "learning_rate": 0.05,
+      "loss": "poisson",
+      "max_bins": 255,
+      "max_depth": null,
+      "max_features": 1.0,
+      "max_iter": 150,
+      "max_leaf_nodes": 15,
+      "min_samples_leaf": 100,
+      "monotonic_cst": null,
+      "n_iter_no_change": 10,
+      "quantile": null,
+      "random_state": 2027,
+      "scoring": "loss",
+      "tol": 1e-07,
+      "validation_fraction": 0.1,
+      "verbose": 0,
+      "warm_start": false
+    },
+    "features": [
+      "DrivAge",
+      "BonusMalus",
+      "VehAge",
+      "VehPower",
+      "VehGas",
+      "Density",
+      "Region"
+    ],
+    "preprocessing": "Raw numerical predictors; VehGas and Region converted to pandas categorical with recorded levels",
+    "target": "ClaimNb / Exposure",
+    "sample_weight": "Exposure",
+    "prediction": "Annual claim frequency; multiply by Exposure for expected policy claim count"
+  },
+  "severity": {
+    "candidate": "Gamma GLM",
+    "class": "statsmodels.api.GLM.from_formula",
+    "formula": "ClaimAmount ~ np.log(DrivAge) + np.log(BonusMalus) + np.log1p(VehAge) + VehPower + C(VehGas) + np.log(Density) + C(Region)",
+    "family": "Gamma",
+    "link": "Log",
+    "fit": {
+      "method": "bfgs",
+      "maxiter": 1000,
+      "start_params": "Intercept = log(mean fitting ClaimAmount); all other coefficients = 0"
+    },
+    "categorical_reference_levels": {
+      "VehGas": "Diesel",
+      "Region": "Alsace"
+    },
+    "target": "Original ClaimAmount for every development claim; no capping or exclusions",
+    "prediction": "Arithmetic mean claim severity"
+  },
+  "full_development_refit_performed": false,
+  "final_test_evaluation_performed": false,
+  "next_step": "Notebook 07: refit the frozen specifications on all development data, then evaluate once on the reserved test set",
+  "conventional_severity_comparison_status": "complete_including_lognormal_retransformation_check",
+  "additional_oof_sha256": {
+    "05_lognormal_severity_oof.csv": "89d3b0b95b1d33e4bf2324606e6641228bffcbc693c6666e898e0478c6e866bc",
+    "06_body_tail_oof.csv": "c417a7686afe650a6cc2e7f682c7f49a826848c4a8347649ca6b4bdd7735a7a8"
+  },
+  "lognormal_benchmark": {
+    "formula": "np.log(ClaimAmount) ~ np.log(DrivAge) + np.log(BonusMalus) + np.log1p(VehAge) + VehPower + C(VehGas) + np.log(Density) + C(Region)",
+    "fit": "Ordinary least squares on log(ClaimAmount), same predictors as Gamma",
+    "normal_retransformation": "exp(predicted log amount + sigma_squared / 2); sigma_squared = mean squared fitting residual",
+    "smearing_check": "exp(predicted log amount) * mean(exp(fitting residual))",
+    "correction_estimated_from": "Fitting portion of each policy-level CV fold only",
+    "selected": false,
+    "fold_models": "models/05_cv/lognormal_fold_1.joblib through lognormal_fold_5.joblib"
+  },
+  "modeling_decisions_frozen": true,
+  "body_tail_comparison": {
+    "status": "completed_not_selected",
+    "thresholds": [
+      5000,
+      10000,
+      20000
+    ],
+    "selected_threshold": null,
+    "body": "Upper-truncated Gamma; log parent mean; common shape",
+    "probability": "Logistic exceedance probability on all fitting claims, no exposure offset or class balancing",
+    "tail": "GPD excess, location zero, constant scale and unrestricted constant shape",
+    "predictor_sets": {
+      "M0": [],
+      "M1": [
+        "VehPower"
+      ],
+      "M2": [
+        "VehPower",
+        "log(DrivAge)",
+        "log(BonusMalus)"
+      ]
+    },
+    "body_probability_levels": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        2,
+        2
+      ]
+    ],
+    "fixed_slope_penalty_scales": {
+      "body": 2,
+      "probability": 1
+    },
+    "preprocessing": "Component-specific fitting-sample standardization; intercept unpenalized",
+    "bootstrap": {
+      "unit": "claim-bearing policy within fitting fold",
+      "replicates_per_fold_threshold": 200,
+      "seed": 202706,
+      "refitted_components": [
+        "GPD"
+      ]
+    },
+    "reason_not_selected": "20,000-threshold aggregate calibration is competitive, but expected means remain threshold-sensitive and less stable across folds; GPD uncertainty includes nonfinite means; predictor additions yield little reproducible gain",
+    "fold_artifacts": "models/06_cv/components_u{threshold}_fold{fold}.joblib",
+    "oof_predictions": "data/processed/06_body_tail_oof.csv"
+  }
+}

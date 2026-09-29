@@ -1,0 +1,17 @@
+# Local Python environment and editor state
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.vscode/
+
+# Regenerable row-level data, diagnostics, and final predictions
+data/processed/**
+!data/processed/README.md
+
+# Regenerable fitted model objects; keep the small JSON specifications/manifests
+models/**/*.joblib
+
+# Operating-system metadata
+.DS_Store
+Thumbs.db

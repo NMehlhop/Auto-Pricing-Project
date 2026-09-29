@@ -1,0 +1,31 @@
+{
+  "notebook": "06_extreme_severity_modeling.ipynb",
+  "input_sha256": {
+    "data\\processed\\05_development_policies.csv": "76a3b309c6b0076fb45788d643bc7f40be475bcd9693083103876bd66da6274c",
+    "data\\processed\\05_severity_oof.csv": "5a5e4d1e6996ccc2c1974c99f8def158073613ca0a2c4270dcbfbf8711a2d344",
+    "models\\05_selected_specifications.json": "1977794aeba701b16a529a43a808211aa95137f2ff375a0d3c1e7e8f49aa6514"
+  },
+  "development_claims": 21079,
+  "folds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "body_tail_candidates": 15,
+  "accepted_component_fits": 105,
+  "bootstrap_fits": 3000,
+  "bootstrap_failures": 0,
+  "selected_specifications": "models\\06_selected_specifications.json",
+  "test_data_loaded": false,
+  "full_development_refit_performed": false,
+  "verification": [
+    "Policy separation within each fold",
+    "OOF identity and coverage",
+    "Truncated Gamma density integrates to one",
+    "Analytic body mean agrees with quadrature",
+    "Saved component predictions reconstruct OOF values",
+    "Existing input hashes unchanged"
+  ]
+}
